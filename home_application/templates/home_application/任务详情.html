@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head %}
+    <title>{% trans "任务详情 | checklist" %}</title>
+    {{ block.super }}
+    <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/select2-3.5.2/select2.css" rel="stylesheet">
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="page-content" >
+        <form id="validate_form_job">
+	        <ol class="breadcrumb detail-breadcrumb">
+	            <li><span style="color:saddlebrown">业务名称: <div id="cur_business_name" style="display: inline;"></div></span></li>
+                <li><span style="color:saddlebrown">模板类型: <div id="cur_template_type" style="display: inline;"></div></span></li>
+                <li><span style="color:saddlebrown">模板名称: <div id="cur_template_name" style="display: inline;"></div></span></li>
+                <li><span style="color:saddlebrown">操作识别号: <div id="cur_operator_id" style="display: inline;"></div></span></li>
+	            <a class="bk-icon-button bk-warning bk-button-mini" href="https://apps.ce.bktencent.com/checklist/job_center/" target="_self" title="返回" style="float: right">
+	                <i class="bk-icon icon-back bk-icon"></i>
+	                <i class="bk-text">返回</i>
+	            </a>
+	        </ol>
+        </form>
+	        <div class="bk-panel bk-demo" >
+	            <div class="bk-panel-body p0" style="margin: 10px">
+	                <table class="bk-table" id="jobDetail">
+	                                <thead>
+	                                <tr>
+	                                    <th style="color:saddlebrown">序号</th>
+	                                    <th style="color:saddlebrown">操作事项</th>
+	                                    <th style="color:saddlebrown">备注</th>
+	                                    <th style="color:saddlebrown">完成时间</th>
+	                                    <th style="color:saddlebrown">负责人</th>
+	                                    <th style="color:saddlebrown">确认人</th>
+	                                    <th style="color:saddlebrown">状态</th>
+	                                </tr>
+	                                </thead>
+	                            </table>
+  	            </div>
+            </div>
+		    </div>
+
+	    <!-- 待办任务完成弹出框( Modal )  -->
+	    <div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+	                            <div class="modal-dialog" style="width: 680px;">
+	                                <div class="modal-content">
+	                                    <div class="modal-header">
+	                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+	                                        <h4 class="modal-title" id="myModalLabel" style="color:saddlebrown"><b>提示</b>
+	                                            <img src="https://img.zcool.cn/community/0149cb5dea5543a801209568918023.jpg@1280w_1l_2o_100sh.jpg" width="40" heigh="50">
+	                                        </h4>
+	                                    </div>
+	                                    <div class="bk-form" style="width:600px;padding: 10px" id="validate_form">
+	                                        <div class="bk-form-item">
+                                                <label class="bk-label" id="cur_order" name="cur_order"></label>
+	                                            <label class="bk-label" style="color:saddlebrown; width:400px;line-height:100px;text-align: center">是否确认完成?</label>
+	                                        </div>
+	                                    </div>
+	                                    <div class="modal-footer">
+	                                        <button type="button" class="bk-button bk-default" style="color:saddlebrown" onclick="editState()">确定</button>
+	                                        <button type="button" class="bk-button bk-default" data-dismiss="modal" style="color:saddlebrown">取消</button>
+	                                    </div>
+	                                </div><!-- /.modal-content -->
+	                            </div><!-- /.modal-dialog -->
+	                        </div>
+
+
+{% endblock %}
+
+{% block extra_block %}
+
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/validate-1.14.0/js/jquery.validate.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/daterangepicker-2.0.5/moment.min.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/daterangepicker-2.0.5/daterangepicker.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/umeditor.config.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/umeditor.min.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/lang/zh-cn/zh-cn.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/select2-3.5.2/select2.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/bkSwitcher-1.0/js/bkSwitcher.js"></script>
+    <script>
+        // 获取 URL 中的参数
+        var searchParams = new URLSearchParams(window.location.search);
+        var operator_id = searchParams.get('operator_id');
+        var template_name = searchParams.get('template_name');
+        var business_name = searchParams.get('business_name');
+        var template_type = searchParams.get('template_type');
+
+        var operator_id_container = document.getElementById("cur_operator_id");
+        operator_id_container.innerText = operator_id;
+
+        var template_name_container = document.getElementById("cur_template_name");
+        template_name_container.innerText = template_name;
+
+        var business_name_container = document.getElementById("cur_business_name");
+        business_name_container.innerText = business_name;
+
+        var template_type_container = document.getElementById("cur_template_type");
+        template_type_container.innerText = template_type;
+
+
+        var order = cur_order;
+        //console.log(operator_id)
+        var page_size = 20;
+        var language = {
+            search: "{% trans '搜索：' %}",
+            lengthMenu: "{% trans '每页显示 _MENU_ 记录' %}",
+            zeroRecords: "{% trans '没找到相应的数据！' %}",
+            info: "{% trans '分页 _PAGE_ / _PAGES_ 共 _TOTAL_ 条' %}",
+            infoEmpty: "{% trans '暂无数据！' %}",
+            infoFiltered: "{% trans '(从 _MAX_ 条数据中搜索)' %}",
+            paginate: {
+                first: "{% trans '首页' %}",
+                last: "{% trans '尾页' %}",
+                previous: "{% trans '上一页' %}",
+                next: "{% trans '下一页' %}",
+            }
+        }
+
+        var JobDetailsOperateTable = $('#jobDetail').DataTable({
+            sProcessing: '<img alt="loadding" src="https://magicbox.bk.tencent.com/static_api/v3/components/loading1/images/loading_2_36x36.gif">',//这里很重要，如果你的加载中是文字，则直接写上文字即可，如果是gif的图片，使用img标签就可以加载
+            pagingType: "full_numbers",
+            paging: true, //隐藏分页
+            ordering: false, //关闭排序
+            info: false, //隐藏左下角分页信息
+            searching: false, //关闭搜索
+            pageLength: 10, //每页显示几条数据
+            lengthChange: true, //允许用户改变表格每页显示的记录数
+            language: language, //汉化
+            serverSide: true,
+            lengthMenu: [5, 10, 25, 50, 75, 100],
+            ajax: {
+                url: '{{ SITE_URL }}get_job_detail_list_operate/'+operator_id+"/",
+                method: 'post',
+                dataType: 'json',
+                data: function (d) {
+                    //d.operator_id = operator_id;
+                    //提取查询条件
+                    //d.search_business_name = $('#search_business_name  option:selected').val();
+                    //d.search_template_type = $('#search_template_type  option:selected').val();
+                    //d.search_template_name = $('#search_template_name').val();
+                    d.csrfmiddlewaretoken = "{{ csrf_token }}";
+                },
+                dataSrc: function (json) {
+                    json.draw = json.data.info.draw;
+                    json.recordsTotal = json.data.info.recordsTotal;
+                    json.recordsFiltered = json.data.info.recordsFiltered;
+                    json.data = json.data.info.data
+
+                    return json.data;
+                },
+            },
+            columnDefs: [
+                {
+                    targets: 0,
+                    data: "order",
+                },
+                {
+                    targets: 1,
+                    data: "operation",
+                },
+                {
+                    targets: 2,
+                    data: "operation_note",
+                },
+                {
+                    targets: 3,
+                    data: "finish_time",
+                },
+                {
+                    targets: 4,
+                    data: "person_responsible",
+                },
+                {
+                    targets: 5,
+                    data: "person_confirm",
+                },
+                {
+                    targets: 6,
+                    data: "state",
+                    render: function (data, type, row, meta) {
+                        console.log('state:',data.toString());//调试语句
+                        console.log('order:', row.order);
+                        if (data)
+                            // console.log('state:',data2.toString());//调试语句
+                            return'<a> </a>已完成';
+                        else
+                            return '<a href="#mymodal3" class="bk-icon-button bk-warning bk-button-mini" data-toggle="modal" data-target="#myModal3" onclick="passState(' + row.order + ')">\n'+
+	                            '</a>  未完成';
+                    }
+                },
+            ]
+        });
+
+
+        setInterval(function () {
+            JobDetailsOperateTable.ajax.reload(null, false); // user paging is not reset on reload
+
+        }, 30000);
+
+
+        function passState(order){
+            console.log('id:',order);//调试语句
+            $.ajax({
+                url: '{{ SITE_URL }}pass_state_by_order/' + order,
+                method: 'get',
+                success: function (response) {
+                    if (response['result']) {
+                        $('#cur_order').val(response.data.info.data.order);
+                    } else {
+                        // 失败处理
+                        new bkMessage({
+                            message: response['message'],
+                            theme: 'error',
+                            delay: 3000
+                        });
+                    }
+                }
+            })
+        }
+
+        function editState(){
+            $.ajax({
+                url: '{{ SITE_URL }}edit_job_detail_state/' + operator_id + "/" ,
+                method: 'post',
+                data:{
+                    'order': $("#cur_order").val(),
+                },
+                success: function (response) {
+                    if (response['result']) {
+                        new bkMessage({
+                            message: response['message'],
+                            theme: 'success'
+                        })
+                        JobDetailsOperateTable.ajax.reload(null, false)
+                    } else {
+                        // 失败处理
+                        new bkMessage({
+                            message: response['message'],
+                            theme: 'error',
+                            delay: 3000
+                        });
+                    }
+                }
+
+            })
+        }
+
+    </script>
+{% endblock %}

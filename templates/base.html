@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+{% load i18n %}
+<html>
+<head>
+    {% block head %}
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <title>{{ APP_CODE }}</title>
+        <link rel="icon" href="{{ STATIC_URL }}open/favicon.ico" type="image/x-icon">
+        <meta name="description" content=""/>
+        <meta name="author" content=""/>
+        <!-- bootstrap css -->
+        <link href="{{ REMOTE_STATIC_URL }}v3/assets/bootstrap-3.3.4/css/bootstrap.min.css" rel="stylesheet">
+        <!-- 禁止bootstrap 响应式 （app根据自身需求启用或禁止bootstrap响应式） -->
+        <link href="{{ REMOTE_STATIC_URL }}v3/assets/bootstrap-3.3.4/css/bootstrap_noresponsive.css" rel="stylesheet">
+        <!-- jquery ui css-->
+        <link href="{{ REMOTE_STATIC_URL }}v3/assets/jquery-ui-1.11.0.custom/jquery-ui.min.css" rel="stylesheet">
+        <!--自定义css-->
+        <link href="{{ STATIC_URL }}open/css/bk.css?v={{ STATIC_VERSION }}" rel="stylesheet">
+        <!-- 平台cs	 -->
+        <link href="{{ REMOTE_STATIC_URL }}v3/bk/css/bk.css" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}open/css/index.css?v={{ STATIC_VERSION }}">
+
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css-pro/bk.css" rel="stylesheet">
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/components_pro/layout6/css/index.css" rel="stylesheet">
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/bk-icon-2.0/iconfont.css" rel="stylesheet">
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css-pro/components/dialog.css" rel="stylesheet">
+        <!--    <link href="https://magicbox.bk.tencent.com/static_api/v3/bk/css-pro/components/form.css" rel="stylesheet">-->
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/daterangepicker-2.0.5/daterangepicker-2.0.css" rel="stylesheet">
+        <link href="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/themes/default/css/umeditor.css" rel="stylesheet">
+        <style>
+            /*如果你需要给你的应用固定高度和宽度，请在这里修改*/
+            body {
+                min-width: 1210px;
+            }
+
+            .king-navbar-active {
+                background: #a17808;
+            }
+
+            .bk-horz-nav11 {
+                background-color: #dcc694;
+            }
+
+        </style>
+    {% endblock %}
+</head>
+
+<!-- echarts js  -->
+<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.0/dist/echarts.min.js"></script>
+
+<body>
+<!--顶部导航 Start-->
+<nav class="bk-horz-nav11">
+    <a href="{{ SITE_URL }}">
+        <div class="bk-nav-logo f1" style="color:saddlebrown">
+            <img src="https://img.zcool.cn/community/012dfb5dea554ea801209568bc9a4b.jpg@1280w_1l_2o_100sh.jpg">{% trans 'Checklist' %}
+        </div>
+    </a>
+    <div class="bk-nav-user fr">
+        <span class="mr5" style="color:saddlebrown">{{ request.user.username }}</span>
+        <img src="https://img.zcool.cn/community/01ed545dea5549a801213853516318.jpg@1280w_1l_2o_100sh.jpg">
+    </div>
+    <ul class="bk-nav-links fr">
+        {% block navigation %}
+            <li id="home" >
+                <a href="{{ SITE_URL }}"><span style="color:white" >{% trans '任务模板' %}</span></a>
+            </li>
+            <li id="jobs">
+                <a href="{{ SITE_URL }}job_center/"><span style="color:white">{% trans '任务中心' %}</span></a>
+            </li>
+{#            <li id="details">#}
+{#                <a href="{{ SITE_URL }}job_details/"></a>#}
+{#            </li>#}
+{#            <li id="details2">#}
+{#                <a href="{{ SITE_URL }}job_details2/"></a>#}
+{#            </li>#}
+        {% endblock %}
+    </ul>
+</nav>
+<!--顶部导航 End-->
+
+<!-- 固定宽度居中 start -->
+{% block content %}{% endblock %}
+
+<!-- 固定宽度表单居中 end -->
+
+</body>
+{% block base_js %}
+    <!-- jquery js  -->
+    <script src="{{ REMOTE_STATIC_URL }}v3/assets/js/jquery-1.10.2.min.js"></script>
+    <script src="{{ REMOTE_STATIC_URL }}jquery/jquery.json-2.3.min.js"></script>
+    <!-- 处理jquery兼容问题，jQuery Migrate（迁移）插件包含了1.6.4以来存在但1.9已不支持所有API -->
+    <script src="{{ REMOTE_STATIC_URL }}v3/assets/js/jquery-migrate-1.2.1.min.js"></script>
+    <!-- bootstrap js  -->
+    <script src="{{ REMOTE_STATIC_URL }}v3/assets/bootstrap-3.3.4/js/bootstrap.min.js"></script>
+    <!-- jquery ui js-->
+    <script src="{{ REMOTE_STATIC_URL }}v3/assets/jquery-ui-1.11.0.custom/jquery-ui.min.js"></script>
+    <!-- 平台 js  -->
+    <script src="{{ REMOTE_STATIC_URL }}v3/bk/js/bk.js"></script>
+
+    <!-- # -----------------------要引入的文件-开始----------------------------->
+    <script src="{{ SITE_URL }}static/datatables-1.10.7/jquery.dataTables.js"></script>
+    <script src="{{ SITE_URL }}static/datatables-1.10.7/dataTables.bootstrap.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/bkDialog-2.0/js/bkDialog.js"></script>
+    {#    <script src="{{ SITE_URL }}static/datatables-1.10.7/jquery.dataTables.js"></script>#}
+    {#    <script src="{{ SITE_URL }}static/datatables-1.10.7/dataTables.bootstrap.js"></script>#}
+    {#    #}
+    <script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.js"></script>
+    <script src="https://cdn.datatables.net/1.10.7/js/jquery.dataTables.min.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/bkMessage-1.0/js/bkMessage.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/validate-1.14.0/js/jquery.validate.js"></script>
+    <!-- # -----------------------要引入的文件-结束----------------------------->
+
+    <!-- 这个是全局配置，如果需要在js中使用app_code和site_url,则这个javascript片段一定要保留 -->
+    <script type="text/javascript">
+        var app_code = "{{ APP_CODE }}";			// 在蓝鲸系统里面注册的"应用编码"
+        var site_url = "{{ SITE_URL }}";			// app的url前缀,在ajax调用的时候，应该加上该前缀
+        var remote_static_url = "{{ REMOTE_STATIC_URL }}";   //远程资源链接，403页面需要，不要删除
+        var debug_mode = JSON.parse("{{ DEBUG }}");	// 是否调试模式
+    </script>
+    <!--统计js  勿删-->
+    <script src="{{ REMOTE_STATIC_URL }}analysis.js?v={{ STATIC_VERSION }}"></script>
+    <script src="{{ STATIC_URL }}account/login.js?v={{ STATIC_VERSION }}"></script>
+    <script src="{{ STATIC_URL }}js/csrftoken.js?v={{ STATIC_VERSION }}"></script>
+
+    <script>
+        var relative_path = "{{ APP_PATH }}";
+        if (relative_path == site_url)
+            $('#home').addClass('king-navbar-active');
+        else if (relative_path == site_url + "job_center/")
+            $('#jobs').addClass('king-navbar-active');
+
+        function change_language(lang) {
+            $.ajax({
+                url: site_url + 'i18n/setlang/',
+                method: 'post',
+                data: {
+                    'language': lang,
+                },
+                success: function (ret) {
+                    window.location.reload()
+                }
+            })
+        }
+    </script>
+
+{% endblock %}
+{% block extra_block %}
+    <!--
+        这里放置子页面中附加内容，一般为js，注意子模版中的js如果使用到以上js库，必须放置在这里
+     -->
+
+{% endblock %}
+</html>

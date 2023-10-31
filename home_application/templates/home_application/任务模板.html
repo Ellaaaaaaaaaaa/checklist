@@ -1,0 +1,511 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block head %}
+    <title>{% trans "运维发布Checklist" %}</title>
+    {{ block.super }}
+{% endblock %}
+
+{% block content %}
+    <div class="page-content" style="min-width:90%;">
+        <div class="bk-panel bk-demo">
+            <div class="bk-panel-header" >
+                    <div class="bk-form bk-inline-form">
+                        <div class="bk-form-item">
+                            <label class="bk-label" style="color: saddlebrown">业务名称：</label>
+                            <div class="bk-form-content">
+                                <select id="search_business_name" class="bk-form-select" style="width:150px;">
+                                    <option value=-1>全部</option>
+                                    <option value=0>小游戏教学演示</option>
+                                </select>
+                            </div>
+                        </div>
+                            <div class="bk-form-item">
+                            <label class="bk-label" style="color: saddlebrown">模板类型：</label>
+                            <div class="bk-form-content">
+                                <select id="search_template_type" class="bk-form-select" style="width:150px;">
+                                    <option value=-1>全部</option>
+                                    <option value=0>变更发布</option>
+                                    <option value=1>扩缩容</option>
+                                    <option value=2>上线类</option>
+                                    <option value=3>下架类</option>
+                                    <option value=4>例行维护</option>
+                                </select>
+                            </div>
+                        </div>
+                            <div class="bk-form-item">
+                                <label class="bk-label" style="color: saddlebrown">模板名称：</label>
+                                <div class="bk-form-content">
+                                    <input type="text" class="bk-form-input" id="search_template_name" name="search_template_name"
+                                           placeholder="请输入关键字"
+                                           style="width:150px;">
+                                </div>
+                            </div>
+                            <div class="bk-form-item">
+                                <div class="bk-form-content" >
+                                <button class="bk-button " onclick="search()" title="查询" style="color: saddlebrown">查询</button>
+                                <a href="#mymodal1" class="bk-button" data-toggle="modal" data-target="#myModal" style="color: saddlebrown">新增</a>
+                            </div>
+                            </div>
+                    </div>
+            </div>
+            <div class="bk-panel-body p0" style="margin: 10px">
+                <table id="template" class="bk-table bk-table-header-bordered">
+                    <thead>
+                        <tr>
+                            <th style="color:saddlebrown">模板名称</th>
+                            <th style="color:saddlebrown">业务名称</th>
+                            <th style="color:saddlebrown">模板类型</th>
+                            <th style="color:saddlebrown">创建者</th>
+                            <th style="color:saddlebrown">创建时间</th>
+                            <th style="color:saddlebrown">更新者</th>
+                            <th style="color:saddlebrown">更新时间</th>
+                            <th style="color:saddlebrown">操作</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 待办任务新建弹出框( Modal )  -->
+    <div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                                <div class="modal-dialog" style="width: 680px;">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="myModalLabel1" style="color:saddlebrown"><b>创建待办任务</b>
+                                                <img src="https://img.zcool.cn/community/01ca225dea5547a801209568aa8c3b.jpg@2o.jpg" width="40" heigh="50">
+                                            </h4>
+                                        </div>
+                                        <form id="validate_form_add_job">
+                                            <div class="bk-form" style="width:400px;padding: 10px" id="validate_form_add_job">
+                                            <input type="hidden" id="job_id" class="bk-form-input">
+                                            <div class="bk-form-item">
+                                                <label class="bk-label" style="color:saddlebrown; width:150px;">业务名称</label>
+                                                <div class="bk-form-content" style="margin-left:150px;">
+                                                    <input type="text" id="business_cur_name" name="business_cur_name"  readonly="readonly" style="position:absolute; top:8px; left:1px;">
+                                                </div>
+                                            </div>
+                                            <div class="bk-form-item">
+                                                <label class="bk-label" style="color:saddlebrown; width:150px;">模板类型</label>
+                                                <div class="bk-form-content" style="margin-left:150px;">
+                                                    <input type="text" id="template_cur_type" name="template_cur_type"  readonly="readonly" style="position:absolute; top:8px; left:1px;">
+                                                </div>
+                                            </div>
+                                            <div class="bk-form-item">
+                                                <label class="bk-label" style="color:saddlebrown; width:150px;">模板名称</label>
+                                                <div class="bk-form-content" style="margin-left:150px;">
+                                                    <input type="text" id="template_cur_name" name="template_cur_name" readonly="readonly" style="position:absolute; top:8px; left:1px;">
+                                                </div>
+                                            </div>
+                                            <div class="bk-form-item">
+                                                <label class="bk-label" style="position:relative;top:8px;color:saddlebrown; width:150px;">操作识别号</label>
+                                                <div class="bk-form-content" style="top:8px;margin-left:150px;">
+                                                    <div>
+                                                        <input type="text" id="operator_id" name="operator_id" placeholder="请输入操作识别号" style="position:absolute; top:8px; left:1px;">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        </form>
+                                        <div class="modal-footer">
+                                            <button type="button" class="bk-button bk-default" style="color:saddlebrown" onclick="addJob()">创建</button>
+                                            <button type="button" class="bk-button bk-default" data-dismiss="modal" style="color:saddlebrown">取消</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+    <!-- 任务模板新建弹出框( Modal )  -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static">
+                                <div class="modal-dialog" style="width: 680px;">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title" id="myModalLabel" style="color:saddlebrown"><b>新建待办模板</b>
+                                                <img src="https://img.zcool.cn/community/01ca225dea5547a801209568aa8c3b.jpg@2o.jpg" width="40" heigh="50">
+                                            </h4>
+                                        </div>
+                                        <form id="validate_form_add_template" method="post" enctype="multipart/form-data">
+                                            <div class="bk-form" style="width:600px;padding: 10px" id="validate_form_add_template">
+                                                <input type="hidden" id="template_id" class="bk-form-input">
+                                                <div class="bk-form-item">
+                                                    <label class="bk-label" style="color:saddlebrown; width:150px;">业务名称</label>
+                                                    <div class="bk-form-content" style="margin-left:150px;">
+                                                        <select id="business_name" style="position:relative; top:8px; left:1px;">
+                                                            <option value=-1>全部</option>
+                                                            <option value=0>小游戏教学演示</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="bk-form-item">
+                                                    <label class="bk-label" style="color:saddlebrown; width:150px;">模板类型</label>
+                                                    <div class="bk-form-content" style="margin-left:150px;">
+                                                        <select id="template_type" style="position:relative; top:8px; left:1px;">
+                                                            <option value=-1>全部</option>
+                                                            <option value=0>变更发布</option>
+                                                            <option value=1>扩缩容</option>
+                                                            <option value=2>上线类</option>
+                                                            <option value=3>下架类</option>
+                                                            <option value=4>例行维护</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="bk-form-item">
+                                                    <label class="bk-label" style="color:saddlebrown; width:150px;">模板名称</label>
+                                                    <div class="bk-form-content" style="margin-left:150px;">
+                                                        <input id="template_name" type="text" name="templateName" placeholder="请输入模板名称" style="position:absolute; top:8px; left:1px;">
+                                                    </div>
+                                                </div>
+                                                <div class="bk-form-item">
+                                                    <label class="bk-label" style="position:relative;top:8px;color:saddlebrown; width:150px;">选择导入模板</label>
+                                                    <div class="bk-form-content" style="top:8px;margin-left:150px;">
+                                                        <form id="template_content_form" method="post" enctype="multipart/form-data">
+                                                            {% csrf_token %}
+
+                                                            <div>
+                                                                <input id="file" type="file" name="file" accept=".xls" style="position:relative;top:8px;color:saddlebrown; width:200px;"/>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                        </div>
+                                        </form>
+                                            <div class="modal-footer">
+                                            <button type="button" class="bk-button bk-default" data-dismiss="modal" style="color:saddlebrown">返回</button>
+                                            <button type="button" onclick="addTemplate()" class="bk-button bk-default" style="color:saddlebrown">提交</button>
+                                        </div>
+                                    </div><!-- /.modal-content -->
+                                </div><!-- /.modal-dialog -->
+                            </div>
+
+{% endblock %}
+
+{% block extra_block %}
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/daterangepicker-2.0.5/moment.min.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/daterangepicker-2.0.5/daterangepicker.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/umeditor.config.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/umeditor.min.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/umeditor-1.2.2/lang/zh-cn/zh-cn.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/select2-3.5.2/select2.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/bkSwitcher-1.0/js/bkSwitcher.js"></script>
+    <script src="https://magicbox.bk.tencent.com/static_api/v3/assets/validate-1.14.0/js/jquery.validate.js"></script>
+    <script>
+
+         //表格(DataTables)
+        var language = {
+            search: "{% trans '搜索：' %}",
+            lengthMenu: "{% trans '每页显示 _MENU_ 记录' %}",
+            zeroRecords: "{% trans '没找到相应的数据！' %}",
+            info: "{% trans '分页 _PAGE_ / _PAGES_ 共 _TOTAL_ 条' %}",
+            infoEmpty: "{% trans '暂无数据！' %}",
+            infoFiltered: "{% trans '(从 _MAX_ 条数据中搜索)' %}",
+            paginate: {
+                first: "{% trans '首页' %}",
+                last: "{% trans '尾页' %}",
+                previous: "{% trans '上一页' %}",
+                next: "{% trans '下一页' %}",
+            }
+        }
+        var templateTable = $('#template').DataTable({
+            sProcessing: '<img alt="loadding" src="https://magicbox.bk.tencent.com/static_api/v3/components/loading1/images/loading_2_36x36.gif">',//这里很重要，如果你的加载中是文字，则直接写上文字即可，如果是gif的图片，使用img标签就可以加载
+            pagingType: "full_numbers",
+            paging: true, //隐藏分页
+            ordering: false, //开启排序
+            info: false, //隐藏左下角分页信息
+            searching: false, //关闭搜索
+            pageLength: 10, //每页显示几条数据
+            lengthChange: true, //不允许用户改变表格每页显示的记录数
+            language: language, //汉化
+            serverSide: true,
+            lengthMenu: [5, 10, 25, 50, 75, 100],
+            ajax: {
+                url: "{{ SITE_URL }}get_template_list/",
+                method: 'post',
+                dataType: 'json',
+                data: function (d) {
+                    //提取查询条件
+                    d.search_business_name = $('#search_business_name  option:selected').val();
+                    d.search_template_type = $('#search_template_type  option:selected').val();
+                    d.search_template_name = $('#search_template_name').val();
+                    d.csrfmiddlewaretoken = "{{ csrf_token }}";
+                },
+                dataSrc: function (json) {
+                    json.draw = json.data.info.draw;
+                    json.recordsTotal = json.data.info.recordsTotal;
+                    json.recordsFiltered = json.data.info.recordsFiltered;
+                    json.data = json.data.info.data
+
+                    return json.data;
+                },
+            },
+            columnDefs: [
+                {
+                    targets: 0,
+                    data: "template_name",
+                },
+                {
+                    targets: 1,
+                    data: "business_name",
+                },
+                {
+                    targets: 2,
+                    data: "template_type",
+                },
+                {
+                    targets: 3,
+                    data: "creator",
+                },
+                {
+                    targets: 4,
+                    data: "create_time",
+                },
+                {
+                    targets: 5,
+                    data: "updator",
+                },
+                {
+                    targets: 6,
+                    data: "update_time",
+                },
+                {
+                    targets: 7,
+                    data: "operation",
+                    render: function (data, type, row, meta) {
+                        console.log('id:',data);//调试语句
+                        return '<a class="bk-icon-button bk-warning bk-button-mini" type="button"  onclick="editTemplate(\'' + row.template_name + '\')" title="新增">\n' +
+                            '<i class="bk-icon icon-plus bk-icon"></i>\n' +
+                            '<i class="bk-text">新增</i>\n' +
+                            '</a>\n' +
+                            '<a class="bk-icon-button bk-warning bk-button-mini" type="button" onclick="downloadTemplateForm(\'' + row.template_name + '\')" title="下载">\n' +
+                            '<i class="bk-icon icon-download bk-icon"></i>\n' +
+                            '<i class="bk-text">下载</i>\n' +
+                            '</a>\n' +
+                            '<a class="bk-icon-button bk-danger bk-button-mini" type="button" onclick="deleteTemplate(\'' + row.template_name + '\')" title="删除">\n' +
+                            '<i class="bk-icon icon-close bk-icon"></i>\n' +
+                            '<i class="bk-text">删除</i>\n' +
+                            '</a>\n';
+                    }
+                },
+            ]
+        });
+
+        setInterval(function () {
+            templateTable.ajax.reload(null, false); // user paging is not reset on reload
+        }, 30000);
+
+        $('#validate_form_add_template').validate({
+            ignore: '.ignore',
+            errorElement: 'div', //错误信息的容器
+            errorClass: 'is-danger',
+            errorPlacement: function (error, element) {
+                error.addClass('bk-form-tip').insertAfter(element)
+            },
+            success: function (label) {                 //验证通过的提示图标
+                label.html('<div class="bk-badge bk-success"><i class="bk-icon icon-check-1"></i></div>');
+            },
+            validClass: "bk-valid",
+            //验证规则
+            rules: {
+                business_name: {
+                    required: true,
+                },
+                template_type: {
+                    required: true,
+                },
+                template_name: {
+                    required: true,
+                },
+            },
+            //错误提示信息
+            messages: {
+                business_name: "<p class='bk-tip-text'>选择业务为必填项！</p>  ",
+                template_type: "<p class='bk-tip-text'>模板类型为必填项！</p>  ",
+                template_name: "<p class='bk-tip-text'>模板名称为必填项！</p>  ",
+            }
+        });
+
+        $('#validate_form_add_job').validate({
+            ignore: '.ignore',
+            errorElement: 'div', //错误信息的容器
+            errorClass: 'is-danger',
+            errorPlacement: function (error, element) {
+                error.addClass('bk-form-tip').insertAfter(element)
+            },
+            success: function (label) {                 //验证通过的提示图标
+                label.html('<div class="bk-badge bk-success"><i class="bk-icon icon-check-1"></i></div>');
+            },
+            validClass: "bk-valid",
+            //验证规则
+            rules: {
+                operator_id: {
+                    required: true,
+                },
+
+            },
+            //错误提示信息
+            messages: {
+                operator_id: "<p class='bk-tip-text'>操作序号为必填项！</p>  ",
+            }
+        });
+
+        function search(){
+            templateTable.ajax.reload(null, false);
+        }
+
+        function addTemplate() {
+            if ($('#validate_form_add_template').valid()) {
+                var formData = new FormData();
+
+                formData.append('business_name', $("#business_name").val());
+                formData.append('template_type', $("#template_type").val());
+                formData.append('template_name', $("#template_name").val());
+                formData.append('template_id', $("#template_id").val());
+
+                var fileInput = document.getElementById('file');
+                var fileinfo = fileInput.files[0];
+                formData.append('template_content',fileinfo);
+
+                $.ajax({
+                    url: "{{ SITE_URL }}create_template/",
+                    method: 'post',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+
+                    success: function (response) {
+                        if (response['result']) {
+                            new bkMessage({
+                                message: response['message'],
+                                theme: 'success'
+                            })
+                            $('#myModal').modal('hide')
+                            templateTable.ajax.reload(null, false)
+                        } else {
+                            // 失败处理
+                            new bkMessage({
+                                message: response['message'],
+                                theme: 'error',
+                                delay: 3000
+                            });
+                            $('#myModal').modal('hide')
+                            templateTable.ajax.reload(null, false)
+                        }
+                    }
+                })
+            }
+        }
+
+         $('#myModal').on('hide.bs.modal', function () {
+            document.getElementById("validate_form_add_template").reset();
+            $("#validate_form_add_template").validate().resetForm();
+            $('#business_name').val(1);
+            $('#template_type').val(1);
+            $('#template_name').val("");
+            $('#template_id').val("");
+        });
+
+        function deleteTemplate(id) {
+            console.log(':id:',id); //调试语句
+            var dialog = new bkDialog({
+                type: 'dialog',
+                title: '删除',
+                content: '该模板将被删除，操作确认？',
+                confirmFn: function () {
+                    $.ajax({
+                        url: '{{ SITE_URL }}delete_template/' + id + "/",
+                        method: 'get',
+                        success: function (response) {
+                            if (response['result']) {
+                                new bkMessage({
+                                    message: response['message'],
+                                    theme: 'success'
+                                })
+                                templateTable.ajax.reload(null, false)
+                            } else {
+                                // 失败处理
+                                new bkMessage({
+                                    message: response['message'],
+                                    theme: 'error',
+                                    delay: 3000
+                                });
+                            }
+                        }
+                    })
+                }
+            });
+            dialog.show();
+        }
+
+        function editTemplate(id) {
+            $.ajax({
+                url: '{{ SITE_URL }}get_template_info_by_name/' + id +"/",
+                method: 'get',
+                success: function (response) {
+                    if (response['result']) {
+                        $("#myModalLabel1").text("新增任务");
+                        $('#myModal1').modal('show');
+                        $("#template_cur_name").val(response.data.info.data.template_name);
+                        $('#business_cur_name').val(response.data.info.data.business_name);
+                        $('#template_cur_type').val(response.data.info.data.template_type);
+                    } else {
+                        // 失败处理
+                        new bkMessage({
+                            message: response['message'],
+                            theme: 'error',
+                            delay: 3000
+                        });
+                    }
+                }
+            })
+        }
+
+        function downloadTemplateForm(id) {
+            window.location.href = "{{ SITE_URL }}download_template/"+id+"/"
+        }
+
+        function addJob(){
+            if($('#validate_form_add_job').valid()) {
+                $.ajax({
+                    url: '{{ SITE_URL }}create_todo_job/',
+                    method: 'post',
+                    data: {
+                        'operator_id': $("#operator_id").val(),
+                        'business_cur_name': $("#business_cur_name").val(),
+                        'template_cur_type': $("#template_cur_type").val(),
+                        'template_cur_name': $("#template_cur_name").val(),
+                        'job_id': $('#job_id').val(),
+                        // 'csrfmiddlewaretoken': "{{ csrf_token }}"
+                    },
+                    success: function (response) {
+                        if (response['result']) {
+                            new bkMessage({
+                                message: response['message'],
+                                theme: 'success'
+                            })
+                            $('#myModalJob').modal('hide')
+                            templateTable.ajax.reload(null, false)
+                        } else {
+                            // 失败处理
+                            new bkMessage({
+                                message: response['message'],
+                                theme: 'error',
+                                delay: 3000
+                            });
+                            $('#myModalJob').modal('hide')
+                            templateTable.ajax.reload(null, false)
+                        }
+                    }
+                })
+            }
+        }
+
+        $('#myModalJob').on('hide.bs.modal', function () {
+            document.getElementById("validate_form_add_job").reset();
+            $("#validate_form_add_job").validate().resetForm();
+            $('#operator_id').val("");
+            $('#job_id').val("");
+        });
+
+    </script>
+{% endblock %}
